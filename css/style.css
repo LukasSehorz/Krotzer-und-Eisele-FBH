@@ -407,6 +407,13 @@ strong{font-weight:700;color:var(--ink)}
 .form__err{display:none;background:#fdecec;border:1px solid #f4c7c7;color:#a12222;
   padding:1rem 1.2rem;border-radius:var(--radius-sm);font-weight:600;margin-bottom:1.2rem}
 .form__err.show{display:block}
+.form__missing{display:none;background:var(--red-soft);border:1px solid #f4c7c7;color:#a12222;
+  padding:1rem 1.2rem;border-radius:var(--radius-sm);margin-bottom:1.2rem}
+.form__missing.show{display:block}
+.form__missing strong{display:block;color:#a12222;margin-bottom:.5rem;font-weight:700}
+.form__missing ul{margin:0;padding-left:1.25rem}
+.form__missing li{margin:.2rem 0;font-weight:600}
+.form .is-invalid{border-color:var(--red) !important;box-shadow:0 0 0 3px rgba(225,50,42,.12)}
 
 .contact-aside{display:grid;gap:1rem}
 .contact-card{background:var(--ink-2);color:#fff;border-radius:var(--radius-lg);padding:clamp(24px,3vw,34px)}

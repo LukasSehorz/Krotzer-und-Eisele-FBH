@@ -125,9 +125,56 @@
   /* contact form -> Netlify Function -> Resend */
   var form = document.querySelector("#anfrage-form");
   if (form) {
+    var missingBox = form.querySelector(".form__missing");
+
+    /* lesbare Beschriftung eines Felds ermitteln */
+    function fieldLabel(el) {
+      if (el.name === "datenschutz") return "Datenschutz-Einwilligung";
+      var lab = el.id ? form.querySelector('label[for="' + el.id + '"]') : null;
+      if (!lab) { var f = el.closest(".field"); if (f) lab = f.querySelector("label"); }
+      var t = lab ? lab.textContent.replace(/\*/g, "").trim() : (el.name || "Feld");
+      return t.length > 55 ? t.slice(0, 52).trim() + "…" : t;
+    }
+
+    /* Markierungen + Hinweisbox zurücksetzen */
+    function clearMissing() {
+      form.querySelectorAll(".is-invalid").forEach(function (el) { el.classList.remove("is-invalid"); });
+      if (missingBox) { missingBox.classList.remove("show"); missingBox.innerHTML = ""; }
+    }
+
+    /* alle fehlenden Pflichtfelder sammeln und formatiert anzeigen */
+    function showMissing() {
+      var invalids = form.querySelectorAll(":invalid");
+      var seen = {}, items = "";
+      invalids.forEach(function (el) {
+        el.classList.add("is-invalid");
+        var lbl = fieldLabel(el);
+        if (!seen[lbl]) { seen[lbl] = 1; items += "<li>" + lbl + "</li>"; }
+      });
+      if (missingBox) {
+        missingBox.innerHTML =
+          "<strong>Bitte füllen Sie noch folgende Pflichtfelder aus:</strong><ul>" + items + "</ul>";
+        missingBox.classList.add("show");
+        missingBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      var first = invalids[0];
+      if (first && first.focus) { try { first.focus({ preventScroll: true }); } catch (e) {} }
+    }
+
+    /* Markierung entfernen, sobald ein Feld korrigiert wurde */
+    var recheck = function (ev) {
+      var t = ev.target;
+      if (t && t.classList && t.classList.contains("is-invalid") && t.checkValidity && t.checkValidity()) {
+        t.classList.remove("is-invalid");
+      }
+    };
+    form.addEventListener("input", recheck);
+    form.addEventListener("change", recheck);
+
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
-      if (!form.checkValidity()) { form.reportValidity(); return; }
+      clearMissing();
+      if (!form.checkValidity()) { showMissing(); return; }
 
       var ok = form.querySelector(".form__ok");
       var err = form.querySelector(".form__err");
