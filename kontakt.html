@@ -90,6 +90,7 @@
               data-netlify="true" netlify-honeypot="bot-field"
               enctype="multipart/form-data" novalidate>
           <input type="hidden" name="form-name" value="anfrage">
+          <input type="hidden" name="subject" id="mailsubject">
           <p class="hidden" hidden><label>Bitte leer lassen: <input name="bot-field"></label></p>
           <div class="form__ok" role="status">Vielen Dank! Ihre Anfrage wurde übermittelt. Wir melden uns zeitnah bei Ihnen.</div>
           <div class="form__err" role="alert">Es gab ein Problem beim Übermitteln. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt telefonisch.</div>
@@ -257,7 +258,7 @@
               <input type="file" id="grundriss" name="grundriss" accept="image/*,application/pdf">
             </div>
           </div>
-          <p class="form__note">Optional. Mehrere Dateien möglich.</p>
+          <p class="form__note">Optional. Mehrere Dateien möglich. Große Fotos werden vor dem Senden automatisch verkleinert.</p>
 
           <div class="field">
             <label for="nachricht">Ihre Nachricht</label>

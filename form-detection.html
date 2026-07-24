@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  form-detection v2
+  form-detection v3
   Versteckte Formular-Kopie ausschließlich zur Netlify-Formularerkennung beim Build.
   Netlify scannt statisches HTML nach data-netlify-Formularen. Da das echte Formular
   in kontakt.html per JavaScript (fetch) gesendet wird, sorgt diese Datei dafür, dass
@@ -12,6 +12,7 @@
 <body>
   <form name="anfrage" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" hidden>
     <input type="hidden" name="form-name" value="anfrage">
+    <input type="text" name="subject">
     <input name="bot-field">
     <input type="text" name="name">
     <input type="tel" name="telefon">

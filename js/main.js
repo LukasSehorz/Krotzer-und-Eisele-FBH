@@ -85,6 +85,30 @@
     counters.forEach(function (el) { co.observe(el); });
   }
 
+  /* Bild-Komprimierung: verkleinert große (Handy-)Fotos vor dem Upload,
+     damit die Einsendung sicher unter Netlifys ~10-MB-Limit bleibt. */
+  function compressImage(file, maxDim, quality) {
+    return new Promise(function (resolve) {
+      if (!file || !file.type || file.type.indexOf("image/") !== 0) { resolve(file); return; }
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        var cw = Math.max(1, Math.round(img.width * scale));
+        var ch = Math.max(1, Math.round(img.height * scale));
+        var canvas = document.createElement("canvas");
+        canvas.width = cw; canvas.height = ch;
+        canvas.getContext("2d").drawImage(img, 0, 0, cw, ch);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function (blob) {
+          resolve(blob && blob.size < file.size ? blob : file);
+        }, "image/jpeg", quality);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
   /* contact form -> Netlify Forms */
   var form = document.querySelector("#anfrage-form");
   if (form) {
@@ -95,21 +119,55 @@
       var ok = form.querySelector(".form__ok");
       var err = form.querySelector(".form__err");
       var btn = form.querySelector("button[type=submit]");
+      var showErr = function (msg) {
+        if (!err) return;
+        if (msg) err.textContent = msg;
+        err.classList.add("show");
+        err.scrollIntoView({ behavior: "smooth", block: "center" });
+      };
       if (err) err.classList.remove("show");
       if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Wird gesendet …"; }
 
-      fetch("/", { method: "POST", body: new FormData(form) })
-        .then(function (res) {
-          if (!res.ok) throw new Error("submit failed: " + res.status);
-          if (ok) { ok.classList.add("show"); ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
-          form.reset();
-        })
-        .catch(function () {
-          if (err) { err.classList.add("show"); err.scrollIntoView({ behavior: "smooth", block: "center" }); }
-        })
-        .finally(function () {
-          if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Anfrage absenden"; }
+      /* eindeutiger Betreff -> jede Anfrage kommt als eigene Mail an (kein Gmail-Sammelthread) */
+      var subjEl = form.querySelector("#mailsubject");
+      if (subjEl) {
+        var val = function (n) { var el = form.querySelector("[name='" + n + "']"); return el ? el.value.trim() : ""; };
+        var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+        var stamp = p(d.getDate()) + "." + p(d.getMonth() + 1) + ". " + p(d.getHours()) + ":" + p(d.getMinutes());
+        var ort = val("objektadresse");
+        subjEl.value = "Fräs-Anfrage: " + (val("name") || "Website") + (ort ? " – " + ort : "") + " · " + stamp;
+      }
+
+      /* Fotos/Grundriss komprimieren, dann senden */
+      var fd = new FormData(form);
+      var jobs = [];
+      form.querySelectorAll("input[type=file]").forEach(function (input) {
+        fd.delete(input.name);
+        Array.prototype.forEach.call(input.files, function (file) {
+          jobs.push(compressImage(file, 1600, 0.82).then(function (out) {
+            var name = /^image\//.test(file.type) ? file.name.replace(/\.[^.]+$/, "") + ".jpg" : file.name;
+            fd.append(input.name, out, name);
+          }));
         });
+      });
+
+      Promise.all(jobs).then(function () {
+        var total = 0;
+        fd.forEach(function (v) { if (v && typeof v.size === "number") total += v.size; });
+        if (total > 9 * 1024 * 1024) throw new Error("too-large");
+        return fetch("/", { method: "POST", body: fd });
+      }).then(function (res) {
+        if (!res || !res.ok) throw new Error("submit-failed");
+        if (ok) { ok.classList.add("show"); ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        if (err) err.classList.remove("show");
+        form.reset();
+      }).catch(function (e) {
+        showErr(e && e.message === "too-large"
+          ? "Die angehängten Dateien sind zu groß. Bitte laden Sie weniger oder kleinere Fotos hoch – oder senden Sie diese separat per E-Mail an ke.fraestechnik@gmail.com."
+          : "Es gab ein Problem beim Übermitteln. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt telefonisch.");
+      }).finally(function () {
+        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Anfrage absenden"; }
+      });
     });
   }
 
