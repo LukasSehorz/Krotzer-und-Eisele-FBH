@@ -404,6 +404,9 @@ strong{font-weight:700;color:var(--ink)}
 .form__ok{display:none;background:var(--green-soft);border:1px solid #cdebd9;color:#13713f;
   padding:1rem 1.2rem;border-radius:var(--radius-sm);font-weight:600;margin-bottom:1.2rem}
 .form__ok.show{display:block}
+.form__err{display:none;background:#fdecec;border:1px solid #f4c7c7;color:#a12222;
+  padding:1rem 1.2rem;border-radius:var(--radius-sm);font-weight:600;margin-bottom:1.2rem}
+.form__err.show{display:block}
 
 .contact-aside{display:grid;gap:1rem}
 .contact-card{background:var(--ink-2);color:#fff;border-radius:var(--radius-lg);padding:clamp(24px,3vw,34px)}

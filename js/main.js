@@ -85,15 +85,31 @@
     counters.forEach(function (el) { co.observe(el); });
   }
 
-  /* contact form (front-end demo) */
+  /* contact form -> Netlify Forms */
   var form = document.querySelector("#anfrage-form");
   if (form) {
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
+
       var ok = form.querySelector(".form__ok");
-      if (ok) { ok.classList.add("show"); ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
-      form.reset();
+      var err = form.querySelector(".form__err");
+      var btn = form.querySelector("button[type=submit]");
+      if (err) err.classList.remove("show");
+      if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Wird gesendet …"; }
+
+      fetch("/", { method: "POST", body: new FormData(form) })
+        .then(function (res) {
+          if (!res.ok) throw new Error("submit failed: " + res.status);
+          if (ok) { ok.classList.add("show"); ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
+          form.reset();
+        })
+        .catch(function () {
+          if (err) { err.classList.add("show"); err.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        })
+        .finally(function () {
+          if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Anfrage absenden"; }
+        });
     });
   }
 

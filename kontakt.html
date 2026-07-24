@@ -86,8 +86,13 @@
       <div class="form-grid">
 
         <!-- LINKS: Formular -->
-        <form id="anfrage-form" class="form" novalidate>
+        <form id="anfrage-form" class="form" name="anfrage" method="POST"
+              data-netlify="true" netlify-honeypot="bot-field"
+              enctype="multipart/form-data" novalidate>
+          <input type="hidden" name="form-name" value="anfrage">
+          <p class="hidden" hidden><label>Bitte leer lassen: <input name="bot-field"></label></p>
           <div class="form__ok" role="status">Vielen Dank! Ihre Anfrage wurde übermittelt. Wir melden uns zeitnah bei Ihnen.</div>
+          <div class="form__err" role="alert">Es gab ein Problem beim Übermitteln. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt telefonisch.</div>
 
           <p class="form__hint">Bitte senden Sie uns nach Möglichkeit Fotos der Räume, Angaben zur Fläche sowie einen Grundriss. Je genauer die Angaben sind, desto besser kann die Ausführbarkeit vorab eingeschätzt werden.</p>
 
