@@ -1,0 +1,4 @@
+# Nur der Functions-Ordner wird deklariert – das statische Hosting
+# (Publish-Verzeichnis) bleibt unverändert wie bisher.
+[functions]
+  directory = "netlify/functions"

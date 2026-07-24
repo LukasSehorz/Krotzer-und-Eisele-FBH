@@ -109,7 +109,20 @@
     });
   }
 
-  /* contact form -> Netlify Forms */
+  /* Blob/Datei -> base64 (ohne data:-Präfix) für den Mail-Anhang */
+  function fileToBase64(blob) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () {
+        var s = String(r.result), c = s.indexOf(",");
+        resolve(c >= 0 ? s.slice(c + 1) : s);
+      };
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+  }
+
+  /* contact form -> Netlify Function -> Resend */
   var form = document.querySelector("#anfrage-form");
   if (form) {
     form.addEventListener("submit", function (ev) {
@@ -128,34 +141,44 @@
       if (err) err.classList.remove("show");
       if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Wird gesendet …"; }
 
-      /* eindeutiger Betreff -> jede Anfrage kommt als eigene Mail an (kein Gmail-Sammelthread) */
-      var subjEl = form.querySelector("#mailsubject");
-      if (subjEl) {
-        var val = function (n) { var el = form.querySelector("[name='" + n + "']"); return el ? el.value.trim() : ""; };
-        var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
-        var stamp = p(d.getDate()) + "." + p(d.getMonth() + 1) + ". " + p(d.getHours()) + ":" + p(d.getMinutes());
-        var ort = val("objektadresse");
-        subjEl.value = "Fräs-Anfrage: " + (val("name") || "Website") + (ort ? " – " + ort : "") + " · " + stamp;
-      }
+      /* Textfelder sammeln (Mehrfach-Checkboxen zusammenführen) */
+      var fields = {}, multi = {};
+      new FormData(form).forEach(function (v, k) {
+        if (typeof v !== "string") return;            // Dateien separat behandeln
+        if (k === "bot-field") return;                // Honeypot separat
+        if (fields[k] !== undefined) {
+          if (!multi[k]) multi[k] = [fields[k]];
+          multi[k].push(v);
+        } else {
+          fields[k] = v;
+        }
+      });
+      Object.keys(multi).forEach(function (k) { fields[k] = multi[k].join(", "); });
+      var dsg = form.querySelector("[name=datenschutz]");
+      if (dsg && dsg.checked) fields.datenschutz = "Ja";
+      var botField = (form.querySelector("[name=bot-field]") || {}).value || "";
 
-      /* Fotos/Grundriss komprimieren, dann senden */
-      var fd = new FormData(form);
+      /* Fotos/Grundriss komprimieren -> base64-Anhänge */
       var jobs = [];
       form.querySelectorAll("input[type=file]").forEach(function (input) {
-        fd.delete(input.name);
         Array.prototype.forEach.call(input.files, function (file) {
           jobs.push(compressImage(file, 1600, 0.82).then(function (out) {
-            var name = /^image\//.test(file.type) ? file.name.replace(/\.[^.]+$/, "") + ".jpg" : file.name;
-            fd.append(input.name, out, name);
+            return fileToBase64(out).then(function (b64) {
+              var name = /^image\//.test(file.type) ? file.name.replace(/\.[^.]+$/, "") + ".jpg" : file.name;
+              return { filename: name, content: b64 };
+            });
           }));
         });
       });
 
-      Promise.all(jobs).then(function () {
-        var total = 0;
-        fd.forEach(function (v) { if (v && typeof v.size === "number") total += v.size; });
-        if (total > 9 * 1024 * 1024) throw new Error("too-large");
-        return fetch("/", { method: "POST", body: fd });
+      Promise.all(jobs).then(function (attachments) {
+        var payloadSize = attachments.reduce(function (s, a) { return s + (a.content ? a.content.length : 0); }, 0);
+        if (payloadSize > 4.5 * 1024 * 1024) throw new Error("too-large");
+        return fetch("/.netlify/functions/anfrage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fields: fields, attachments: attachments, botField: botField })
+        });
       }).then(function (res) {
         if (!res || !res.ok) throw new Error("submit-failed");
         if (ok) { ok.classList.add("show"); ok.scrollIntoView({ behavior: "smooth", block: "center" }); }

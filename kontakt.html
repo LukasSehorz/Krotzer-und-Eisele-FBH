@@ -86,12 +86,8 @@
       <div class="form-grid">
 
         <!-- LINKS: Formular -->
-        <form id="anfrage-form" class="form" name="anfrage" method="POST"
-              data-netlify="true" netlify-honeypot="bot-field"
-              enctype="multipart/form-data" novalidate>
-          <input type="hidden" name="form-name" value="anfrage">
-          <input type="hidden" name="subject" id="mailsubject">
-          <p class="hidden" hidden><label>Bitte leer lassen: <input name="bot-field"></label></p>
+        <form id="anfrage-form" class="form" novalidate>
+          <p class="hidden" hidden aria-hidden="true"><label>Bitte leer lassen: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
           <div class="form__ok" role="status">Vielen Dank! Ihre Anfrage wurde übermittelt. Wir melden uns zeitnah bei Ihnen.</div>
           <div class="form__err" role="alert">Es gab ein Problem beim Übermitteln. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt telefonisch.</div>
 
