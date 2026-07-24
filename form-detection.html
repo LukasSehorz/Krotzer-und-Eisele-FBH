@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <!--
+  form-detection v2
   Versteckte Formular-Kopie ausschließlich zur Netlify-Formularerkennung beim Build.
   Netlify scannt statisches HTML nach data-netlify-Formularen. Da das echte Formular
   in kontakt.html per JavaScript (fetch) gesendet wird, sorgt diese Datei dafür, dass
@@ -21,10 +22,10 @@
     <input type="number" name="flaeche">
     <input type="number" name="raeume">
     <input type="number" name="baujahr">
-    <input type="text" name="etage[]">
+    <input type="checkbox" name="etage" value="Keller">
     <input type="text" name="bodenbelag">
     <input type="text" name="belag-entfernt">
-    <input type="text" name="estrichart[]">
+    <input type="checkbox" name="estrichart" value="Zementestrich">
     <input type="text" name="risse">
     <input type="text" name="verteiler">
     <input type="text" name="heizungsbauer">
