@@ -582,6 +582,8 @@ strong{font-weight:700;color:var(--ink)}
   font-size:.84rem}
 .footer__bar a:hover{color:#fff}
 .footer__bar .links{display:flex;gap:1.4rem;flex-wrap:wrap}
+.footer__ai{padding-bottom:1.6rem;font-size:.8rem;line-height:1.6;color:rgba(255,255,255,.72)}
+.footer__ai p{margin:0}
 
 /* ---------- Cookie-Banner ---------- */
 .cookie-banner{position:fixed;left:0;right:0;bottom:0;z-index:90;background:var(--ink);color:#fff;
