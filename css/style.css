@@ -688,3 +688,6 @@ strong{font-weight:700;color:var(--ink)}
 @media (max-width:880px){
   .hero .container{position:static}
 }
+
+/* Anker-Sprünge (z. B. #erstverguss) nicht unter den sticky Header schieben */
+:target{scroll-margin-top:100px}

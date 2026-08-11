@@ -32,6 +32,8 @@ const SECTIONS = [
     ["waermeerzeuger", "Wärmeerzeuger"], ["baustrom", "Baustromanschluss"]
   ]},
   { title: "Projekt", fields: [
+    ["leistungsumfang", "Gewünschter Leistungsumfang"],
+    ["leistung-individuell", "Leistungsumfang – individuelle Angaben"],
     ["zeitraum", "Gewünschter Zeitraum"], ["nachricht", "Nachricht"],
     ["datenschutz", "Datenschutz akzeptiert"]
   ]}
