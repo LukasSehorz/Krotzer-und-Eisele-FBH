@@ -586,17 +586,63 @@ strong{font-weight:700;color:var(--ink)}
 .footer__ai p{margin:0}
 
 /* ---------- Cookie-Banner ---------- */
-.cookie-banner{position:fixed;left:0;right:0;bottom:0;z-index:90;background:var(--ink);color:#fff;
-  box-shadow:0 -12px 44px -22px rgba(0,0,0,.7);transform:translateY(120%);transition:transform .45s cubic-bezier(.4,0,.2,1)}
-.cookie-banner.show{transform:none}
+.cookie-banner{position:fixed;left:0;right:0;bottom:0;z-index:2000;background:var(--ink);color:#fff;
+  box-shadow:0 -12px 44px -22px rgba(0,0,0,.7);transform:translateY(120%);visibility:hidden;
+  transition:transform .45s cubic-bezier(.4,0,.2,1),visibility .45s;
+  max-height:100dvh;overflow-y:auto;overscroll-behavior:contain}
+.cookie-banner.show{transform:none;visibility:visible}
+.cookie-banner [hidden]{display:none!important}
 .cookie-banner__inner{max-width:var(--maxw);margin-inline:auto;padding:clamp(14px,2.2vw,20px) var(--gut);
   display:flex;flex-wrap:wrap;gap:.9rem 1.6rem;align-items:center;justify-content:space-between}
 .cookie-banner p{color:#fff;font-size:.88rem;line-height:1.55;max-width:66ch;margin:0}
+.cookie-banner p b{color:#fff}
 .cookie-banner a{color:#fff;text-decoration:underline}
 .cookie-banner__actions{display:flex;flex-wrap:wrap;gap:.6rem;flex-shrink:0}
 .cookie-banner .btn{padding:.7em 1.3em;font-size:.88rem}
 .cookie-banner .btn--ghost{color:#fff;border-color:rgba(255,255,255,.32)}
 .cookie-banner .btn--ghost:hover{border-color:#fff;transform:translateY(-2px)}
+.cookie-banner .btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* Detail-Einstellungen (Statistik / Marketing) */
+.cookie-banner__options{flex:1 1 100%;display:grid;gap:.55rem;
+  border-top:1px solid rgba(255,255,255,.14);padding-top:1rem}
+.cookie-opt{position:relative;display:flex;align-items:flex-start;gap:1rem;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);
+  border-radius:var(--radius-sm);padding:.75rem .95rem;transition:border-color var(--t),background var(--t)}
+.cookie-opt:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+.cookie-opt--fixed{cursor:default}
+.cookie-opt--fixed:hover{border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.05)}
+.cookie-opt__txt{display:flex;flex-direction:column;gap:.15rem;flex:1;min-width:0}
+.cookie-opt__txt b{color:#fff;font-size:.9rem;font-weight:700}
+.cookie-opt__txt small{color:rgba(255,255,255,.7);font-size:.79rem;line-height:1.5}
+.cookie-opt input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.cookie-switch{flex-shrink:0;width:44px;height:25px;border-radius:999px;background:rgba(255,255,255,.22);
+  position:relative;margin-top:2px;transition:background var(--t)}
+.cookie-switch::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;
+  background:#fff;transition:transform var(--t)}
+.cookie-opt input:checked ~ .cookie-switch{background:var(--red)}
+.cookie-opt input:checked ~ .cookie-switch::after{transform:translateX(19px)}
+.cookie-opt input:disabled ~ .cookie-switch{opacity:.5}
+.cookie-opt input:focus-visible ~ .cookie-switch{outline:2px solid #fff;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .cookie-banner,.cookie-switch,.cookie-switch::after{transition:none}
+}
+
+/* Footer-Link "Cookie-Einstellungen" */
+.footer__cookiebtn{font:inherit;font-size:inherit;color:#fff;padding:0;text-align:left;
+  border-bottom:1px solid transparent;transition:border-color var(--t)}
+.footer__cookiebtn:hover{border-bottom-color:#fff}
+.footer__cookiebtn:focus-visible{outline:2px solid var(--red-2);outline-offset:3px}
+
+@media (max-width:760px){
+  .cookie-banner__inner{align-items:stretch}
+  .cookie-banner__actions{width:100%}
+  .cookie-banner .btn{flex:1 1 auto;min-width:calc(50% - .3rem);white-space:normal;text-align:center}
+}
+@media (max-width:430px){
+  .cookie-banner .btn{min-width:100%}
+  .cookie-opt{gap:.75rem;padding:.7rem .8rem}
+}
 
 /* ---------- scroll reveal ---------- */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}

@@ -3,12 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google Consent Mode v2 (Default: alles abgelehnt bis zur Einwilligung) -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'denied',
+  functionality_storage: 'granted',
+  security_storage: 'granted',
+  wait_for_update: 500
+});
+(function(){
+  try {
+    var c = JSON.parse(localStorage.getItem('cookie_consent_v1') || 'null');
+    if (c) {
+      gtag('consent', 'update', {
+        ad_storage: c.marketing ? 'granted' : 'denied',
+        ad_user_data: c.marketing ? 'granted' : 'denied',
+        ad_personalization: c.marketing ? 'granted' : 'denied',
+        analytics_storage: c.analytics ? 'granted' : 'denied'
+      });
+    }
+  } catch (e) {}
+})();
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WKXS5QMP');</script>
+<!-- End Google Tag Manager -->
 <title>Referenzen &amp; Projekte | Krotzer &amp; Eisele GmbH</title>
 <meta name="description" content="Ausgewählte Projektbeispiele für nachträglich eingefräste Fußbodenheizungen – von Wohnhäusern bis zu Gewerbeflächen, sauber und fachgerecht ausgeführt. Tätig in den Regionen Bayern, Sachsen, Thüringen, Sachsen-Anhalt und Brandenburg.">
 <meta name="keywords" content="Fußbodenheizung fräsen, Fußbodenheizung nachträglich fräsen, Fußbodenheizung einfräsen, Heizrohre in Estrich fräsen, Fußbodenheizung nachrüsten Deggendorf">
-<link rel="stylesheet" href="css/style.css?v=43">
+<link rel="stylesheet" href="css/style.css?v=44">
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WKXS5QMP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- ============ HEADER (auf allen Seiten identisch) ============ -->
 <!-- ============ TOP-LEISTE (auf allen Seiten identisch) ============ -->
@@ -216,7 +254,7 @@
 
     <div class="footer__bar">
       <span>© <span data-year>2026</span> Krotzer &amp; Eisele GmbH · Alle Rechte vorbehalten.</span>
-      <span class="links"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="agb.html">AGB</a><a href="cookies.html">Cookies</a><a href="kontakt.html">Kontakt</a></span>
+      <span class="links"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="agb.html">AGB</a><a href="cookies.html">Cookies</a><button type="button" class="footer__cookiebtn" data-cookie-settings>Cookie-Einstellungen</button><a href="kontakt.html">Kontakt</a></span>
     </div>
 
     <div class="footer__ai">
@@ -226,12 +264,31 @@
 </footer>
 
 <!-- ============ COOKIE-BANNER (auf allen Seiten identisch) ============ -->
-<div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Cookie-Hinweis">
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Cookie-Einstellungen" aria-describedby="cookieBannerText">
   <div class="cookie-banner__inner">
-    <p>Wir verwenden ausschließlich technisch notwendige Speicherung in Ihrem Browser (Local Storage) für Ihre Cookie-Auswahl. Mehr dazu in unseren <a href="cookies.html">Cookie-Informationen</a> und der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+    <p id="cookieBannerText"><b>Wir nutzen Cookies und den Google Tag Manager.</b> Technisch notwendige Speicherung (z. B. Ihre Cookie-Auswahl) ist immer aktiv. Darüber hinaus setzen wir – ausschließlich mit Ihrer Einwilligung – den Google Tag Manager sowie darin eingebundene Statistik- und Marketing-Dienste ein. Diese werden erst nach Ihrer Zustimmung geladen. Sie können Ihre Auswahl jederzeit ändern. Mehr dazu in unseren <a href="cookies.html">Cookie-Informationen</a> und der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+    <div class="cookie-banner__options" id="cookieOptions" hidden>
+      <label class="cookie-opt cookie-opt--fixed">
+        <span class="cookie-opt__txt"><b>Notwendig</b><small>Erforderlich für den Betrieb der Website und die Speicherung Ihrer Cookie-Auswahl. Immer aktiv.</small></span>
+        <input type="checkbox" checked disabled aria-label="Notwendig – immer aktiv, nicht abwählbar">
+        <span class="cookie-switch" aria-hidden="true"></span>
+      </label>
+      <label class="cookie-opt">
+        <span class="cookie-opt__txt"><b>Statistik / Analyse</b><small>Hilft uns zu verstehen, wie die Website genutzt wird (z. B. Google Analytics über den Google Tag Manager).</small></span>
+        <input type="checkbox" data-consent="analytics" aria-label="Statistik und Analyse zulassen">
+        <span class="cookie-switch" aria-hidden="true"></span>
+      </label>
+      <label class="cookie-opt">
+        <span class="cookie-opt__txt"><b>Marketing</b><small>Erlaubt Werbe- und Remarketing-Dienste sowie die Messung von Werbeerfolgen (z. B. Google Ads).</small></span>
+        <input type="checkbox" data-consent="marketing" aria-label="Marketing zulassen">
+        <span class="cookie-switch" aria-hidden="true"></span>
+      </label>
+    </div>
     <div class="cookie-banner__actions">
-      <button class="btn btn--ghost" data-cookie="essential">Nur notwendige</button>
-      <button class="btn btn--primary" data-cookie="all">Alle akzeptieren</button>
+      <button type="button" class="btn btn--ghost" data-cookie="settings" aria-expanded="false" aria-controls="cookieOptions">Einstellungen</button>
+      <button type="button" class="btn btn--ghost" data-cookie="essential">Nur notwendige</button>
+      <button type="button" class="btn btn--primary" data-cookie="save" hidden>Auswahl speichern</button>
+      <button type="button" class="btn btn--primary" data-cookie="all">Alle akzeptieren</button>
     </div>
   </div>
 </div>

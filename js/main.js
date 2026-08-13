@@ -245,17 +245,106 @@
   var y = document.querySelector("[data-year]");
   if (y) y.textContent = new Date().getFullYear();
 
-  /* cookie banner */
+  /* ---------------------------------------------------------------
+     Cookie-Consent (DSGVO, Google Consent Mode v2)
+     Der Default "denied" wird bereits im <head> jeder Seite gesetzt;
+     hier erfolgen nur noch Anzeige und Aktualisierung der Einwilligung.
+     --------------------------------------------------------------- */
+  var CONSENT_KEY = "cookie_consent_v1";
+  var CONSENT_KEY_LEGACY = "cookieConsent";
+
+  /* gtag defensiv: falls das Head-Snippet fehlt, direkt in den dataLayer schreiben */
+  var gtagFn = window.gtag || function () {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(arguments);
+  };
+
+  function readConsent() {
+    try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || "null"); }
+    catch (e) { return null; }
+  }
+
+  function pushConsent(c) {
+    gtagFn("consent", "update", {
+      ad_storage:          c.marketing ? "granted" : "denied",
+      ad_user_data:        c.marketing ? "granted" : "denied",
+      ad_personalization:  c.marketing ? "granted" : "denied",
+      analytics_storage:   c.analytics ? "granted" : "denied"
+    });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "consent_update" });
+  }
+
   var cb = document.getElementById("cookieBanner");
   if (cb) {
-    var stored = null;
-    try { stored = localStorage.getItem("cookieConsent"); } catch (e) {}
-    if (!stored) setTimeout(function () { cb.classList.add("show"); }, 700);
-    cb.querySelectorAll("[data-cookie]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        try { localStorage.setItem("cookieConsent", b.getAttribute("data-cookie")); } catch (e) {}
-        cb.classList.remove("show");
+    var opts        = cb.querySelector("#cookieOptions");
+    var inAnalytics = cb.querySelector("[data-consent=analytics]");
+    var inMarketing = cb.querySelector("[data-consent=marketing]");
+    var btnSettings = cb.querySelector("[data-cookie=settings]");
+    var btnSave     = cb.querySelector("[data-cookie=save]");
+    var btnAll      = cb.querySelector("[data-cookie=all]");
+    var btnEssent   = cb.querySelector("[data-cookie=essential]");
+
+    function setDetails(open) {
+      if (opts) opts.hidden = !open;
+      if (btnSettings) {
+        btnSettings.hidden = open;
+        btnSettings.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      if (btnSave) btnSave.hidden = !open;
+    }
+
+    function openBanner(withDetails) {
+      var c = readConsent();
+      if (inAnalytics) inAnalytics.checked = !!(c && c.analytics);
+      if (inMarketing) inMarketing.checked = !!(c && c.marketing);
+      setDetails(!!withDetails);
+      cb.classList.add("show");
+    }
+
+    function closeBanner() {
+      cb.classList.remove("show");
+      setDetails(false);
+    }
+
+    function save(analytics, marketing) {
+      var c = {
+        necessary: true,
+        analytics: !!analytics,
+        marketing: !!marketing,
+        ts: Date.now()
+      };
+      try {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify(c));
+        localStorage.removeItem(CONSENT_KEY_LEGACY);
+      } catch (e) {}
+      pushConsent(c);
+      closeBanner();
+    }
+
+    if (btnSettings) btnSettings.addEventListener("click", function () {
+      setDetails(true);
+      var first = cb.querySelector("[data-consent=analytics]");
+      if (first && first.focus) { try { first.focus(); } catch (e) {} }
+    });
+    if (btnSave) btnSave.addEventListener("click", function () {
+      save(inAnalytics && inAnalytics.checked, inMarketing && inMarketing.checked);
+    });
+    if (btnAll) btnAll.addEventListener("click", function () { save(true, true); });
+    if (btnEssent) btnEssent.addEventListener("click", function () { save(false, false); });
+
+    /* Nachtraeglich aufrufbar: Footer-Link bzw. eigenes Event */
+    document.querySelectorAll("[data-cookie-settings]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        openBanner(true);
       });
     });
+    window.addEventListener("open-cookie-settings", function () { openBanner(true); });
+
+    /* Erstbesuch: Banner zeigen. Bei bereits getroffener Auswahl passiert hier
+       nichts mehr - das Head-Snippet hat den Consent-Status schon vor dem
+       Laden des GTM gesetzt. */
+    if (!readConsent()) setTimeout(function () { openBanner(false); }, 700);
   }
 })();
